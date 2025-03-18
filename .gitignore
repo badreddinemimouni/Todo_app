@@ -1,0 +1,27 @@
+# PHPStorm
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Configuration personnelle
+# Vous pouvez décommenter cette ligne si vous ne voulez pas partager vos identifiants de BDD
+# includes/config.php
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Dossiers de dépendances
+/vendor/
+/node_modules/
+
+# Logs et bases de données temporaires
+/log/
+*.log
+*.sql
+*.sqlite
+
+# Fichiers de configuration serveur
+.env
+.htpasswd 
