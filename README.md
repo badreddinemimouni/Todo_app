@@ -1,12 +1,12 @@
 # Application de gestion de tâches (Todo App)
 
-Site developpé pour les compétences de responsive css mobile first et architecture mvc
+Site developpé pour les compétences de responsive css mobile first et architecture mvc + requetes asynchrones avec fetch api
 
 ## Fonctionnalités
 
 -   Affichage liste des tâches
 -   Ajout d'une nouvelle tâche
--   Modification d'une tâche existante
+-   Modification d'une tâche existante (pas eu le temps)
 -   Suppression d'une tâche
 
 ## Installation
