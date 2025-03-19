@@ -23,10 +23,6 @@ switch ($page) {
         $controller = new TaskController();
         $controller->add();
         break;
-    case 'edit':
-        $controller = new TaskController();
-        $controller->edit();
-        break;
     case 'delete':
         $controller = new TaskController();
         $controller->delete();

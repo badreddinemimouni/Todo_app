@@ -8,6 +8,7 @@ class TaskController {
     private $taskModel;
     
     public function __construct() {
+        // charger le modele task
         $this->taskModel = new Task();
     }
     
@@ -19,58 +20,9 @@ class TaskController {
         require_once 'views/tasks/index.php';
     }
     
-    // affiche form ajout
+    // traitement api ajout
     public function add() {
-        // si form soumis
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // nettoyage donnees
-            $title = isset($_POST['title']) ? htmlspecialchars(trim($_POST['title'])) : '';
-            $description = isset($_POST['description']) ? htmlspecialchars(trim($_POST['description'])) : '';
-            $status = isset($_POST['status']) ? htmlspecialchars(trim($_POST['status'])) : 'non terminé';
-            
-            // init data
-            $data = [
-                'title' => $title,
-                'description' => $description,
-                'status' => $status
-            ];
-            
-            // valide
-            if(empty($data['title'])) {
-                $data['title_err'] = 'titre obligatoire';
-            }
-            
-            // check erreurs
-            if(empty($data['title_err'])) {
-                // ajouter
-                if($this->taskModel->addTask($data)) {
-                    // msg ok
-                    $_SESSION['success_msg'] = 'tache ajoutée';
-                    redirect('');
-                } else {
-                    die('probleme');
-                }
-            } else {
-                // charge vue avec erreurs
-                require_once 'views/tasks/add.php';
-            }
-        } else {
-            // init data form vide
-            $data = [
-                'title' => '',
-                'description' => '',
-                'status' => 'non terminé'
-            ];
-            
-            // charge la vue
-            require_once 'views/tasks/add.php';
-        }
-    }
-    
-    // modif tache
-    public function edit() {
-        // recup id depuis l'URL ou depuis le champ caché
-        $id = isset($_GET['id']) ? $_GET['id'] : (isset($_POST['task_id']) ? $_POST['task_id'] : die('erreur id'));
+        header('Content-Type: application/json');
         
         // si form soumis
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -81,59 +33,49 @@ class TaskController {
             
             // init data
             $data = [
-                'id' => $id,
                 'title' => $title,
                 'description' => $description,
                 'status' => $status
             ];
             
-            // valide
+            // validations
             if(empty($data['title'])) {
-                $data['title_err'] = 'titre obligatoire';
+                echo json_encode(['success' => false, 'message' => 'titre obligatoire']);
+                return;
             }
             
-            // check erreurs
-            if(empty($data['title_err'])) {
-                // modif
-                if($this->taskModel->updateTask($data)) {
-                    // msg ok
-                    $_SESSION['success_msg'] = 'tache modifiée';
-                    redirect('');
-                } else {
-                    die('probleme');
-                }
+            // ajouter
+            if($this->taskModel->addTask($data)) {
+                // reponse json ok
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'tache ajoutée', 
+                    'id' => $this->taskModel->getLastInsertId()
+                ]);
             } else {
-                // charge vue avec erreurs
-                require_once 'views/tasks/edit.php';
+                echo json_encode(['success' => false, 'message' => 'probleme ajout']);
             }
         } else {
-            // recup tache existante
-            $task = $this->taskModel->getTaskById($id);
-            
-            // init data form avec tache
-            $data = [
-                'id' => $task->id,
-                'title' => $task->title,
-                'description' => $task->description,
-                'status' => $task->status
-            ];
-            
-            // charge la vue
-            require_once 'views/tasks/edit.php';
+            echo json_encode(['success' => false, 'message' => 'methode invalide']);
         }
     }
     
-    // suppr tache
+    // traitement api delete
     public function delete() {
+        header('Content-Type: application/json');
+        
         // recup id
-        $id = isset($_GET['id']) ? $_GET['id'] : die('erreur id');
+        $id = isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0);
+        
+        if(empty($id)) {
+            echo json_encode(['success' => false, 'message' => 'id invalide']);
+            return;
+        }
         
         if($this->taskModel->deleteTask($id)) {
-            // msg ok
-            $_SESSION['success_msg'] = 'tache supprimée';
-            redirect('');
+            echo json_encode(['success' => true, 'message' => 'tache supprimée']);
         } else {
-            die('probleme');
+            echo json_encode(['success' => false, 'message' => 'erreur suppression']);
         }
     }
 }

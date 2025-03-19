@@ -15,7 +15,6 @@
             <nav>
                 <ul>
                     <li><a href="<?php echo BASE_URL; ?>">Accueil</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>?page=add">Ajouter</a></li>
                 </ul>
             </nav>
         </div>
